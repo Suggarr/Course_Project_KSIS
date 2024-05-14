@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Splash_Screen", "..\Splash_
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Connection_Form", "..\Connection_Form\Connection_Form.csproj", "{3CD6F463-6D69-4737-89DB-3ACF4E1A4013}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "..\..\Сервер\Server\Server.csproj", "{29FD5AC1-7453-47B5-924B-82A96AE8E740}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3CD6F463-6D69-4737-89DB-3ACF4E1A4013}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CD6F463-6D69-4737-89DB-3ACF4E1A4013}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CD6F463-6D69-4737-89DB-3ACF4E1A4013}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29FD5AC1-7453-47B5-924B-82A96AE8E740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29FD5AC1-7453-47B5-924B-82A96AE8E740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29FD5AC1-7453-47B5-924B-82A96AE8E740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29FD5AC1-7453-47B5-924B-82A96AE8E740}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

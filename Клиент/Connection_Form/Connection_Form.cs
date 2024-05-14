@@ -52,10 +52,11 @@ namespace Connection_Form
                     }
                     catch
                     {
-                        IPHostEntry host = Dns.GetHostEntry(data);
-                        if (host != null)
+                        IPAddress[] addresses = Dns.GetHostAddresses(data);
+                        IPAddress[] ipv4Addresses = addresses.Where(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork).ToArray();
+                        if (ipv4Addresses.Length > 0)
                         {
-                            remoteAddress = data;
+                            remoteAddress = ipv4Addresses[0].ToString();
                             textBox_Address.Text = "";
                             MessageBox.Show("Сервер найден!");
                             this.Hide();
@@ -71,6 +72,5 @@ namespace Connection_Form
                 textBox_Address.Text = "Добавить сервер не удалось..";
             }
         }
-
     }
 }

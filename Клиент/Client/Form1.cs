@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Reflection.Emit;
+using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Connection_Form;
 
-namespace Server
+namespace Client
 {
     public partial class Form1 : Form
     {
@@ -33,23 +36,23 @@ namespace Server
             try
             {
                 // Создание TCP-сокета
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
+                {
 
-                // Установка соединения с удаленным узлом
-                socket.Connect(newAddress, remotePort);
-                string input = "LIST";
+                    // Установка соединения с удаленным узлом
+                    socket.Connect(newAddress, remotePort);
+                    string input = "LIST";
 
-                // Отправка введенного текста на сервер
-                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                socket.Send(inputBytes);
+                    // Отправка введенного текста на сервер
+                    byte[] inputBytes = Encoding.ASCII.GetBytes(input);
+                    socket.Send(inputBytes);
 
-                // Получение ответа от сервера
-                byte[] responseBytes = new byte[1024];
-                int bytesRead = socket.Receive(responseBytes);
-                string response = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
-                Console.WriteLine("Ответ от сервера: " + response);
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                    // Получение ответа от сервера
+                    byte[] responseBytes = new byte[1024];
+                    int bytesRead = socket.Receive(responseBytes);
+                    string response = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
+                    Console.WriteLine("Ответ от сервера: " + response);
+                }
             }
             catch (Exception ex)
             {
@@ -61,46 +64,54 @@ namespace Server
         {
             try
             {
-                // Отправка команды получения списка файлов и папок
-                string fileListCommand = "LIST";
-                byte[] commandBytes = Encoding.ASCII.GetBytes(fileListCommand);
-                socket.Send(commandBytes);
-
-                // Получение списка файлов и папок от удаленного узла
-                byte[] buffer = new byte[1024];
-                int bytesRead = socket.Receive(buffer);
-                string fileList = Encoding.ASCII.GetString(buffer, 0, bytesRead);
-
-                // Очистка ListBox
-                listBoxFiles.Items.Clear();
-
-                // Добавление файлов и папок в ListBox
-                string[] filesAndFolders = fileList.Split('|');
-                foreach (string fileOrFolder in filesAndFolders)
+                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
                 {
-                    listBoxFiles.Items.Add(fileOrFolder);
+                    // Подключение к серверу
+                    IPAddress serverIP = IPAddress.Parse(newAddress);
+                    IPEndPoint serverEndPoint = new IPEndPoint(serverIP, remotePort);
+                    socket.Connect(serverEndPoint);
+
+                    // Отправка команды получения списка файлов и папок
+                    string fileListCommand = "LIST|";
+                    byte[] commandBytes = Encoding.UTF8.GetBytes(fileListCommand);
+                    socket.Send(commandBytes);
+
+                    // Получение списка файлов и папок от сервера
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = socket.Receive(buffer);
+                    string fileList = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+
+                    // Очистка ListView
+                    listViewFiles.Items.Clear();
+
+                    // Добавление файлов и папок в ListView
+                    string[] filesAndFolders = fileList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (string fileOrFolder in filesAndFolders)
+                    {
+                        listViewFiles.Items.Add(fileOrFolder);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при получении списка файлов и папок: " + ex.Message);
+                MessageBox.Show("Ошибка при обновлении списка файлов: " + ex.Message);
             }
         }
 
         private void buttonDelete_Click(object sender, EventArgs e)
         {
-            string selectedFile = listBoxFiles.SelectedItem?.ToString();
-            if (selectedFile != null)
+            if (listViewFiles.SelectedItems.Count > 0)
             {
+                string selectedFile = listViewFiles.SelectedItems[0].Text;
                 DeleteFile(selectedFile);
             }
         }
 
         private void buttonRename_Click(object sender, EventArgs e)
         {
-            string selectedFile = listBoxFiles.SelectedItem?.ToString();
-            if (selectedFile != null)
+            if (listViewFiles.SelectedItems.Count > 0)
             {
+                string selectedFile = listViewFiles.SelectedItems[0].Text;
                 string newFileName = textBox1.Text;
                 if (!string.IsNullOrEmpty(newFileName))
                 {
@@ -111,9 +122,9 @@ namespace Server
 
         private void buttonDownload_Click(object sender, EventArgs e)
         {
-            string selectedFile = listBoxFiles.SelectedItem?.ToString();
-            if (selectedFile != null)
+            if (listViewFiles.SelectedItems.Count > 0)
             {
+                string selectedFile = listViewFiles.SelectedItems[0].Text;
                 DownloadFile(selectedFile);
             }
         }
@@ -127,7 +138,7 @@ namespace Server
             }
         }
 
-        private void DeleteFile(string fileName)
+        private void DeleteFile(string fileName)//работает
         {
             try
             {
@@ -164,7 +175,7 @@ namespace Server
             }
         }
 
-        private void RenameFile(string oldFileName, string newFileName)
+        private void RenameFile(string oldFileName, string newFileName)//работает
         {
             try
             {
@@ -197,7 +208,7 @@ namespace Server
             }
         }
 
-        private void DownloadFile(string fileName)
+        private void DownloadFile(string fileName)//работает со всеми файлами
         {
             try
             {
@@ -206,11 +217,12 @@ namespace Server
                     socket.Connect(newAddress, remotePort);
 
                     string downloadCommand = $"DOWNLOAD|{fileName}";
-                    byte[] commandBytes = System.Text.Encoding.ASCII.GetBytes(downloadCommand);
+                    byte[] commandBytes = Encoding.ASCII.GetBytes(downloadCommand);
                     socket.Send(commandBytes);
 
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = socket.Receive(buffer);
+                    byte[] fileSizeBytes = new byte[8];
+                    int bytesReceived = socket.Receive(fileSizeBytes);
+                    long fileSize = BitConverter.ToInt64(fileSizeBytes, 0);
 
                     SaveFileDialog saveFileDialog = new SaveFileDialog();
                     saveFileDialog.FileName = fileName;
@@ -219,7 +231,19 @@ namespace Server
                     {
                         using (FileStream fileStream = new FileStream(saveFileDialog.FileName, FileMode.Create))
                         {
-                            fileStream.Write(buffer, 0, bytesRead);
+                            using (BinaryWriter writer = new BinaryWriter(fileStream))
+                            {
+                                byte[] buffer = new byte[1024];
+                                int bytesRead;
+                                long bytesRemaining = fileSize;
+
+                                while (bytesRemaining > 0 && (bytesRead = socket.Receive(buffer)) > 0)
+                                {
+                                    int bytesToWrite = (int)Math.Min(bytesRemaining, bytesRead);
+                                    writer.Write(buffer, 0, bytesToWrite);
+                                    bytesRemaining -= bytesToWrite;
+                                }
+                            }
                         }
 
                         MessageBox.Show("Файл успешно загружен");
@@ -236,25 +260,45 @@ namespace Server
         {
             try
             {
-                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.Connect(newAddress, remotePort);
-
-                string uploadCommand = $"UPLOAD|{Path.GetFileName(filePath)}";
-                byte[] commandBytes = System.Text.Encoding.ASCII.GetBytes(uploadCommand);
-                socket.Send(commandBytes);
-
-                byte[] buffer = new byte[1024];
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Open))
+                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
                 {
-                    int bytesRead;
-                    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    socket.Connect(newAddress, remotePort);
+
+                    // Отправка команды загрузки файла
+                    string uploadCommand = $"UPLOAD|{Path.GetFileName(filePath)}";
+                    byte[] commandBytes = Encoding.ASCII.GetBytes(uploadCommand);
+                    socket.Send(commandBytes);
+
+                    // Получение подтверждения от сервера
+                    byte[] confirmationBytes = new byte[2];
+                    int bytesRead = socket.Receive(confirmationBytes);
+                    string confirmation = Encoding.ASCII.GetString(confirmationBytes, 0, bytesRead);
+
+                    if (confirmation == "OK")
                     {
-                        socket.Send(buffer, bytesRead, SocketFlags.None);
+                        // Отправка размера файла
+                        long fileSize = new FileInfo(filePath).Length;
+                        byte[] fileSizeBytes = BitConverter.GetBytes(fileSize);
+                        socket.Send(fileSizeBytes);
+
+                        // Отправка файла по частям
+                        using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                        {
+                            byte[] buffer = new byte[1024];
+                            bytesRead = 0;
+                            while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                socket.Send(buffer, bytesRead, SocketFlags.None);
+                            }
+                        }
+
+                        MessageBox.Show("Файл успешно отправлен на сервер");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось получить подтверждение от сервера");
                     }
                 }
-
-                MessageBox.Show("Файл успешно отправлен на сервер");
-                RefreshFileList();
             }
             catch (Exception ex)
             {
@@ -263,6 +307,7 @@ namespace Server
         }
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
+            ConnectToServer();
             RefreshFileList();
         }
 
@@ -271,8 +316,9 @@ namespace Server
             var connection_Form = new Connection_Form.Connection_Form();
             connection_Form.ShowDialog();
             newAddress = connection_Form.RemoteAddress;
-            label3.Text = "\r\nIP-Адрес: " + newAddress + "\r\nПорт:" + remotePort;
+            label3.Text = "\r\nХост: " + newAddress + "\r\nПорт:" + remotePort;
             ConnectToServer();
         }
     }
 }
+//count = int.Parse(outformat.Deserialize(readerStream).ToString());//Получаем размер файла Если что

@@ -71,7 +71,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_Address);
             this.Name = "Connection_Form";
-            this.Text = "Connection_Form";
+            this.Text = "Подключение к серверу";
             this.ResumeLayout(false);
             this.PerformLayout();
 

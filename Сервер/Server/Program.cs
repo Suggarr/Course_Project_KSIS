@@ -8,11 +8,12 @@ using System.Text;
 public class FileTransferServer
 {
     private const int ListenPort = 12345; // Порт, на котором сервер прослушивает подключения
-    private const string StoragePath = @"H:\Учеба Илья\Черновики"; // Путь к директории для хранения файлов на сервере
+    private const string StoragePath = @"D:\Курс 2\Семестр 2\Компьютерные системы и сети\Курсовая КСиС\Файлы"; // на моем домащней компьютере @"H:\Учеба Илья\Черновики"
 
     public static void Main()
     {
         StartServer();
+        GetFileList();
     }
 
     public static void StartServer()
@@ -142,24 +143,23 @@ public class FileTransferServer
 
             if (File.Exists(filePath))
             {
-                // Отправка подтверждения
-                byte[] confirmationBytes = Encoding.ASCII.GetBytes("OK");
-                handler.Send(confirmationBytes);
-
                 // Отправка размера файла
                 long fileSize = new FileInfo(filePath).Length;
                 byte[] fileSizeBytes = BitConverter.GetBytes(fileSize);
                 handler.Send(fileSizeBytes);
 
-                // Отправка файла по частям
+                // Отправка файла
                 using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
-                    // Отправка данных файла по частям
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = 0;
-                    while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    using (BinaryReader reader = new BinaryReader(fileStream))
                     {
-                        handler.Send(buffer, 0, bytesRead, SocketFlags.None);
+                        byte[] buffer = new byte[1024];
+                        int bytesRead = 0;
+
+                        while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            handler.Send(buffer, 0, bytesRead, SocketFlags.None);
+                        }
                     }
                 }
 
@@ -182,40 +182,32 @@ public class FileTransferServer
         {
             string filePath = Path.Combine(StoragePath, fileName);
 
-            // Получение подтверждения
-            byte[] confirmationBytes = new byte[2];
-            int bytesRead = handler.Receive(confirmationBytes);
-            string confirmation = Encoding.ASCII.GetString(confirmationBytes, 0, bytesRead);
+            // Отправка подтверждения клиенту
+            byte[] confirmationBytes = Encoding.ASCII.GetBytes("OK");
+            handler.Send(confirmationBytes);
 
-            if (confirmation == "OK")
+            // Получение размера файла
+            byte[] fileSizeBytes = new byte[8];
+            int bytesRead = handler.Receive(fileSizeBytes);
+            long fileSize = BitConverter.ToInt64(fileSizeBytes, 0);
+
+            // Получение файла по частям
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
-                // Получение размера файла
-                byte[] fileSizeBytes = new byte[8];
-                bytesRead = handler.Receive(fileSizeBytes);
-                long fileSize = BitConverter.ToInt64(fileSizeBytes, 0);
+                byte[] buffer = new byte[1024];
+                long bytesReceived = 0;
+                int bytesToRead;
 
-                // Получение файла по частям
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                while (bytesReceived < fileSize)
                 {
-                    byte[] buffer = new byte[1024];
-                    long bytesReceived = 0;
-                    int bytesToRead;
-
-                    while (bytesReceived < fileSize)
-                    {
-                        bytesToRead = (int)Math.Min(buffer.Length, fileSize - bytesReceived);
-                        bytesRead = handler.Receive(buffer, 0, bytesToRead, SocketFlags.None);
-                        fileStream.Write(buffer, 0, bytesRead);
-                        bytesReceived += bytesRead;
-                    }
+                    bytesToRead = (int)Math.Min(buffer.Length, fileSize - bytesReceived);
+                    bytesRead = handler.Receive(buffer, 0, bytesToRead, SocketFlags.None);
+                    fileStream.Write(buffer, 0, bytesRead);
+                    bytesReceived += bytesRead;
                 }
+            }
 
-                return "OK";
-            }
-            else
-            {
-                return "Не удалось получить подтверждение.";
-            }
+            return "OK";
         }
         catch (Exception e)
         {
@@ -236,7 +228,10 @@ public class FileTransferServer
                 fileList.AppendLine(file.Name);
             }
 
-            return fileList.ToString();
+            byte[] encodedBytes = Encoding.UTF8.GetBytes(fileList.ToString());
+            string encodedFileListString = Encoding.UTF8.GetString(encodedBytes);
+
+            return encodedFileListString;
         }
         catch (Exception e)
         {
@@ -244,3 +239,5 @@ public class FileTransferServer
         }
     }
 }
+
+//count = int.Parse(outformat.Deserialize(readerStream).ToString());//Получаем размер файла 

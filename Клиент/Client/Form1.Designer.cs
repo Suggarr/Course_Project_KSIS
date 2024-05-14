@@ -1,4 +1,4 @@
-﻿namespace Server
+﻿namespace Client
 {
     partial class Form1
     {
@@ -28,25 +28,29 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem("");
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.справкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.серверToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выйтиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.listBoxFiles = new System.Windows.Forms.ListBox();
+            this.справкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.подключитьсяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.listViewFiles = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -67,38 +71,27 @@
             this.серверToolStripMenuItem,
             this.выйтиToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
-            this.файлToolStripMenuItem.Text = "Файл";
-            // 
-            // справкиToolStripMenuItem
-            // 
-            this.справкиToolStripMenuItem.Name = "справкиToolStripMenuItem";
-            this.справкиToolStripMenuItem.Size = new System.Drawing.Size(82, 26);
-            this.справкиToolStripMenuItem.Text = "Справки";
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(65, 24);
+            this.файлToolStripMenuItem.Text = "Меню";
             // 
             // серверToolStripMenuItem
             // 
-            this.серверToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.подключитьсяToolStripMenuItem});
             this.серверToolStripMenuItem.Name = "серверToolStripMenuItem";
-            this.серверToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.серверToolStripMenuItem.Text = "Сервер";
+            this.серверToolStripMenuItem.Size = new System.Drawing.Size(264, 26);
+            this.серверToolStripMenuItem.Text = "Подключиться к серверу";
+            this.серверToolStripMenuItem.Click += new System.EventHandler(this.подключитьсяToolStripMenuItem_Click);
             // 
             // выйтиToolStripMenuItem
             // 
             this.выйтиToolStripMenuItem.Name = "выйтиToolStripMenuItem";
-            this.выйтиToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.выйтиToolStripMenuItem.Size = new System.Drawing.Size(143, 26);
             this.выйтиToolStripMenuItem.Text = "Выйти";
             // 
-            // listBoxFiles
+            // справкиToolStripMenuItem
             // 
-            this.listBoxFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.listBoxFiles.FormattingEnabled = true;
-            this.listBoxFiles.ItemHeight = 20;
-            this.listBoxFiles.Location = new System.Drawing.Point(12, 31);
-            this.listBoxFiles.Name = "listBoxFiles";
-            this.listBoxFiles.Size = new System.Drawing.Size(778, 504);
-            this.listBoxFiles.TabIndex = 1;
+            this.справкиToolStripMenuItem.Name = "справкиToolStripMenuItem";
+            this.справкиToolStripMenuItem.Size = new System.Drawing.Size(82, 24);
+            this.справкиToolStripMenuItem.Text = "Справки";
             // 
             // groupBox1
             // 
@@ -113,24 +106,6 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Переименование";
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label1.Location = new System.Drawing.Point(6, 48);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(112, 25);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Новое имя";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBox1.Location = new System.Drawing.Point(136, 43);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(262, 30);
-            this.textBox1.TabIndex = 1;
-            // 
             // button1
             // 
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
@@ -141,6 +116,24 @@
             this.button1.Text = "Переименовать";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.buttonRename_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.textBox1.Location = new System.Drawing.Point(136, 43);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(262, 30);
+            this.textBox1.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label1.Location = new System.Drawing.Point(6, 48);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(112, 25);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Новое имя";
             // 
             // button2
             // 
@@ -186,46 +179,73 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.buttonDelete_Click);
             // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.Location = new System.Drawing.Point(796, 361);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(294, 29);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Информация о сервере:";
-            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label3.Location = new System.Drawing.Point(806, 405);
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label3.Location = new System.Drawing.Point(16, 32);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(19, 25);
+            this.label3.Size = new System.Drawing.Size(290, 22);
             this.label3.TabIndex = 7;
-            this.label3.Text = "-";
+            this.label3.Text = "Пока нет подключения к серверу";
             // 
-            // подключитьсяToolStripMenuItem
+            // listViewFiles
             // 
-            this.подключитьсяToolStripMenuItem.Name = "подключитьсяToolStripMenuItem";
-            this.подключитьсяToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.подключитьсяToolStripMenuItem.Text = "Подключиться";
-            this.подключитьсяToolStripMenuItem.Click += new System.EventHandler(this.подключитьсяToolStripMenuItem_Click);
+            this.listViewFiles.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.listViewFiles.HideSelection = false;
+            this.listViewFiles.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem4});
+            this.listViewFiles.Location = new System.Drawing.Point(12, 31);
+            this.listViewFiles.Name = "listViewFiles";
+            this.listViewFiles.Size = new System.Drawing.Size(766, 522);
+            this.listViewFiles.TabIndex = 8;
+            this.listViewFiles.UseCompatibleStateImageBehavior = false;
+            this.listViewFiles.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Файл";
+            this.columnHeader1.Width = 310;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Тип файла";
+            this.columnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader2.Width = 200;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Размер";
+            this.columnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.columnHeader3.Width = 251;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.label3);
+            this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.groupBox2.Location = new System.Drawing.Point(801, 366);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(421, 187);
+            this.groupBox2.TabIndex = 9;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Информация о сервере";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1234, 681);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
+            this.ClientSize = new System.Drawing.Size(1234, 646);
+            this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.listViewFiles);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.listBoxFiles);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -235,6 +255,8 @@
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -247,7 +269,6 @@
         private System.Windows.Forms.ToolStripMenuItem серверToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem выйтиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem справкиToolStripMenuItem;
-        private System.Windows.Forms.ListBox listBoxFiles;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TextBox textBox1;
@@ -256,8 +277,11 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.ToolStripMenuItem подключитьсяToolStripMenuItem;
+        private System.Windows.Forms.ListView listViewFiles;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
