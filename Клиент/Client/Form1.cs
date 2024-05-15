@@ -31,7 +31,7 @@ namespace Client
             splashScreen.ShowDialog();
         }
 
-        private void ConnectToServer()
+        /*private void ConnectToServer()
         {
             try
             {
@@ -58,7 +58,7 @@ namespace Client
             {
                 MessageBox.Show("Ошибка при подключении к серверу: " + ex.Message);
             }
-        }
+        }*/
 
         private void RefreshFileList()
         {
@@ -150,13 +150,13 @@ namespace Client
 
                     // Отправка команды удаления файла
                     string deleteCommand = $"DELETE|{fileName}";
-                    byte[] commandBytes = System.Text.Encoding.ASCII.GetBytes(deleteCommand);
+                    byte[] commandBytes = System.Text.Encoding.UTF8.GetBytes(deleteCommand);
                     socket.Send(commandBytes);
 
                     // Ожидание подтверждения от удаленного узла
                     byte[] confirmationBuffer = new byte[2];
                     socket.Receive(confirmationBuffer);
-                    string confirmation = System.Text.Encoding.ASCII.GetString(confirmationBuffer);
+                    string confirmation = System.Text.Encoding.UTF8.GetString(confirmationBuffer);
 
                     if (confirmation == "OK")
                     {
@@ -184,12 +184,12 @@ namespace Client
                     socket.Connect(newAddress, remotePort);
 
                     string renameCommand = $"RENAME|{oldFileName}|{newFileName}";
-                    byte[] commandBytes = System.Text.Encoding.ASCII.GetBytes(renameCommand);
+                    byte[] commandBytes = System.Text.Encoding.UTF8.GetBytes(renameCommand);
                     socket.Send(commandBytes);
 
                     byte[] confirmationBuffer = new byte[2];
                     socket.Receive(confirmationBuffer);
-                    string confirmation = System.Text.Encoding.ASCII.GetString(confirmationBuffer);
+                    string confirmation = System.Text.Encoding.UTF8.GetString(confirmationBuffer);
 
                     if (confirmation == "OK")
                     {
@@ -217,7 +217,7 @@ namespace Client
                     socket.Connect(newAddress, remotePort);
 
                     string downloadCommand = $"DOWNLOAD|{fileName}";
-                    byte[] commandBytes = Encoding.ASCII.GetBytes(downloadCommand);
+                    byte[] commandBytes = Encoding.UTF8.GetBytes(downloadCommand);
                     socket.Send(commandBytes);
 
                     byte[] fileSizeBytes = new byte[8];
@@ -266,13 +266,13 @@ namespace Client
 
                     // Отправка команды загрузки файла
                     string uploadCommand = $"UPLOAD|{Path.GetFileName(filePath)}";
-                    byte[] commandBytes = Encoding.ASCII.GetBytes(uploadCommand);
+                    byte[] commandBytes = Encoding.UTF8.GetBytes(uploadCommand);
                     socket.Send(commandBytes);
 
                     // Получение подтверждения от сервера
                     byte[] confirmationBytes = new byte[2];
                     int bytesRead = socket.Receive(confirmationBytes);
-                    string confirmation = Encoding.ASCII.GetString(confirmationBytes, 0, bytesRead);
+                    string confirmation = Encoding.UTF8.GetString(confirmationBytes, 0, bytesRead);
 
                     if (confirmation == "OK")
                     {
@@ -307,7 +307,7 @@ namespace Client
         }
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
-            ConnectToServer();
+            //ConnectToServer();
             RefreshFileList();
         }
 
@@ -317,7 +317,7 @@ namespace Client
             connection_Form.ShowDialog();
             newAddress = connection_Form.RemoteAddress;
             label3.Text = "\r\nХост: " + newAddress + "\r\nПорт:" + remotePort;
-            ConnectToServer();
+            RefreshFileList();
         }
     }
 }

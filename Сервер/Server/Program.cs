@@ -26,7 +26,7 @@ public class FileTransferServer
                 // Привязка сокета к локальной конечной точке и начало прослушивания подключений
                 IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, ListenPort);
                 listener.Bind(localEndPoint);
-                listener.Listen(1);
+                listener.Listen(10);
 
                 Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
@@ -40,7 +40,7 @@ public class FileTransferServer
                         // Получение данных от клиента
                         byte[] data = new byte[1024];
                         int bytesRead = handler.Receive(data);
-                        string request = Encoding.ASCII.GetString(data, 0, bytesRead);
+                        string request = Encoding.UTF8.GetString(data, 0, bytesRead);
 
                         // Разбор запроса
                         string[] requestParts = request.Split('|');
@@ -76,7 +76,7 @@ public class FileTransferServer
                         }
 
                         // Отправка ответа клиенту
-                        byte[] responseBytes = Encoding.ASCII.GetBytes(response);
+                        byte[] responseBytes = Encoding.UTF8.GetBytes(response);
                         handler.Send(responseBytes);
 
                         Console.WriteLine("Запрос обработан: " + response);
@@ -183,7 +183,7 @@ public class FileTransferServer
             string filePath = Path.Combine(StoragePath, fileName);
 
             // Отправка подтверждения клиенту
-            byte[] confirmationBytes = Encoding.ASCII.GetBytes("OK");
+            byte[] confirmationBytes = Encoding.UTF8.GetBytes("OK");
             handler.Send(confirmationBytes);
 
             // Получение размера файла
