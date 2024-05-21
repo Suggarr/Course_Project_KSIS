@@ -13,12 +13,12 @@ namespace Connection_Form
 {
     public partial class Connection_Form : Form
     {
-        public string RemoteAddress 
-        { 
-            get => remoteAddress; 
-            set => remoteAddress = value; 
-        } // Поле для хранения IP-адреса
-        string remoteAddress;
+        public string RemoteAddress
+        {
+            get => remoteAddress;
+            set => remoteAddress = value;
+        } 
+        private string remoteAddress;
         public Connection_Form()
         {
             InitializeComponent();

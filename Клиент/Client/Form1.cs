@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection.Emit;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Connection_Form;
@@ -17,7 +21,6 @@ namespace Client
     public partial class Form1 : Form
     {
         private int remotePort = 12345; // Порт удаленного узла
-        private Socket socket;
         private string newAddress;
 
         public Form1()
@@ -29,37 +32,16 @@ namespace Client
         {
             Form splashScreen = new Splash_Screen.Splash_Screen();
             splashScreen.ShowDialog();
+            var connection_Form = new Connection_Form.Connection_Form();
+            connection_Form.ShowDialog();
+            newAddress = connection_Form.RemoteAddress;
+            label3.Text = "\r\nХост: " + newAddress + "\r\nПорт:" + remotePort;
+            RefreshFileList();
+            listViewFiles.Columns[0].Width = 327;
+            listViewFiles.Columns[1].Width = 257;
         }
 
-        /*private void ConnectToServer()
-        {
-            try
-            {
-                // Создание TCP-сокета
-                using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp))
-                {
-
-                    // Установка соединения с удаленным узлом
-                    socket.Connect(newAddress, remotePort);
-                    string input = "LIST";
-
-                    // Отправка введенного текста на сервер
-                    byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                    socket.Send(inputBytes);
-
-                    // Получение ответа от сервера
-                    byte[] responseBytes = new byte[1024];
-                    int bytesRead = socket.Receive(responseBytes);
-                    string response = Encoding.ASCII.GetString(responseBytes, 0, bytesRead);
-                    Console.WriteLine("Ответ от сервера: " + response);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка при подключении к серверу: " + ex.Message);
-            }
-        }*/
-
+        
         private void RefreshFileList()
         {
             try
@@ -88,7 +70,11 @@ namespace Client
                     string[] filesAndFolders = fileList.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (string fileOrFolder in filesAndFolders)
                     {
-                        listViewFiles.Items.Add(fileOrFolder);
+                        string fileName = Path.GetFileNameWithoutExtension(fileOrFolder);
+                        string fileType = Path.GetExtension(fileOrFolder);
+                        ListViewItem item = new ListViewItem(fileName);
+                        item.SubItems.Add(fileType);
+                        listViewFiles.Items.Add(item);
                     }
                 }
             }
@@ -102,8 +88,10 @@ namespace Client
         {
             if (listViewFiles.SelectedItems.Count > 0)
             {
-                string selectedFile = listViewFiles.SelectedItems[0].Text;
-                DeleteFile(selectedFile);
+                ListViewItem selectedFile = listViewFiles.SelectedItems[0];
+                string selectedName = selectedFile.Text; // Значение первого столбца
+                string selectedType = selectedFile.SubItems[1].Text;
+                DeleteFile(selectedName, selectedType);
             }
         }
 
@@ -112,10 +100,12 @@ namespace Client
             if (listViewFiles.SelectedItems.Count > 0)
             {
                 string selectedFile = listViewFiles.SelectedItems[0].Text;
+                string fileType = listViewFiles.SelectedItems[0].SubItems[1].Text;
                 string newFileName = textBox1.Text;
                 if (!string.IsNullOrEmpty(newFileName))
                 {
-                    RenameFile(selectedFile, newFileName);
+                    string newFileNameWithType = newFileName + fileType;
+                    RenameFile(selectedFile+fileType, newFileNameWithType);
                 }
             }
         }
@@ -125,9 +115,11 @@ namespace Client
             if (listViewFiles.SelectedItems.Count > 0)
             {
                 string selectedFile = listViewFiles.SelectedItems[0].Text;
-                DownloadFile(selectedFile);
+                string fileType = listViewFiles.SelectedItems[0].SubItems[1].Text;
+                DownloadFile(selectedFile, fileType);
             }
         }
+
 
         private void buttonUpload_Click(object sender, EventArgs e)
         {
@@ -138,7 +130,7 @@ namespace Client
             }
         }
 
-        private void DeleteFile(string fileName)//работает
+        private void DeleteFile(string fileName, string fileType)
         {
             try
             {
@@ -149,7 +141,7 @@ namespace Client
                     socket.Connect(newAddress, remotePort);
 
                     // Отправка команды удаления файла
-                    string deleteCommand = $"DELETE|{fileName}";
+                    string deleteCommand = $"DELETE|{fileName+fileType}";
                     byte[] commandBytes = System.Text.Encoding.UTF8.GetBytes(deleteCommand);
                     socket.Send(commandBytes);
 
@@ -208,7 +200,7 @@ namespace Client
             }
         }
 
-        private void DownloadFile(string fileName)//работает со всеми файлами
+        private void DownloadFile(string fileName, string fileType)
         {
             try
             {
@@ -216,16 +208,16 @@ namespace Client
                 {
                     socket.Connect(newAddress, remotePort);
 
-                    string downloadCommand = $"DOWNLOAD|{fileName}";
+                    string downloadCommand = $"DOWNLOAD|{fileName + fileType}";
                     byte[] commandBytes = Encoding.UTF8.GetBytes(downloadCommand);
                     socket.Send(commandBytes);
 
                     byte[] fileSizeBytes = new byte[8];
                     int bytesReceived = socket.Receive(fileSizeBytes);
                     long fileSize = BitConverter.ToInt64(fileSizeBytes, 0);
-
                     SaveFileDialog saveFileDialog = new SaveFileDialog();
-                    saveFileDialog.FileName = fileName;
+                    saveFileDialog.FileName = fileName + fileType;
+                    saveFileDialog.Filter = $"{fileType} files|*{fileType}|All files|*.*";
 
                     if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     {
@@ -247,7 +239,7 @@ namespace Client
                         }
 
                         MessageBox.Show("Файл успешно загружен");
-                    }
+                    } 
                 }
             }
             catch (Exception ex)
@@ -291,7 +283,7 @@ namespace Client
                                 socket.Send(buffer, bytesRead, SocketFlags.None);
                             }
                         }
-
+                        RefreshFileList();
                         MessageBox.Show("Файл успешно отправлен на сервер");
                     }
                     else
@@ -305,9 +297,9 @@ namespace Client
                 MessageBox.Show("Ошибка при отправке файла: " + ex.Message);
             }
         }
+
         private void buttonRefresh_Click(object sender, EventArgs e)
         {
-            //ConnectToServer();
             RefreshFileList();
         }
 
@@ -319,6 +311,10 @@ namespace Client
             label3.Text = "\r\nХост: " + newAddress + "\r\nПорт:" + remotePort;
             RefreshFileList();
         }
+
+        private void выйтиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
     }
 }
-//count = int.Parse(outformat.Deserialize(readerStream).ToString());//Получаем размер файла Если что

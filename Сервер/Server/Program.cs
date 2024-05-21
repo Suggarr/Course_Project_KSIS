@@ -8,7 +8,7 @@ using System.Text;
 public class FileTransferServer
 {
     private const int ListenPort = 12345; // Порт, на котором сервер прослушивает подключения
-    private const string StoragePath = @"D:\Курс 2\Семестр 2\Компьютерные системы и сети\Курсовая КСиС\Файлы"; // на моем домащней компьютере @"H:\Учеба Илья\Черновики"
+    private static readonly string StoragePath = Path.Combine(Directory.GetCurrentDirectory(), "Файлы");  // на моем домащней компьютере @"H:\Учеба Илья\Черновики"
 
     public static void Main()
     {
@@ -239,5 +239,3 @@ public class FileTransferServer
         }
     }
 }
-
-//count = int.Parse(outformat.Deserialize(readerStream).ToString());//Получаем размер файла 
