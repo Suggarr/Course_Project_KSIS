@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Connection_Form));
             this.button_Connection = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox_Address = new System.Windows.Forms.TextBox();
@@ -70,6 +71,7 @@
             this.Controls.Add(this.button_Connection);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_Address);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Connection_Form";
             this.Text = "Подключение к серверу";
             this.ResumeLayout(false);

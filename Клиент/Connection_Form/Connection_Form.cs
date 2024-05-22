@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -39,16 +40,28 @@ namespace Connection_Form
                     try
                     {
                         iP = IPAddress.Parse(data);
-                        IPHostEntry host = Dns.GetHostEntry(iP);
-                        if (host != null)
+
+                        // Проверка, находится ли IP-адрес в локальной сети
+                        Ping ping = new Ping();
+                        PingReply reply = ping.Send(iP, 1000);
+                        if (reply.Status == IPStatus.Success)
                         {
-                            remoteAddress = data;
-                            textBox_Address.Text = "";
-                            MessageBox.Show("Сервер найден!");
-                            this.Hide();
+                            IPHostEntry host = Dns.GetHostEntry(iP);
+                            if (host != null)
+                            {
+                                remoteAddress = data;
+                                textBox_Address.Text = "";
+                                MessageBox.Show("Данный хост существует!\nИдет проверка на наличие сервера на нем...");
+                                this.Hide();
+                            }
+                            else
+                                MessageBox.Show("Не удалось найти сервер по заданному IP!");
                         }
                         else
-                            MessageBox.Show("Не удалось найти сервер по заданному IP!");
+                        {
+                            MessageBox.Show($"Не удалось подключиться к {data} - данный IP-адрес отсутствует в локальной сети.");
+                            textBox_Address.Text = "";
+                        }
                     }
                     catch
                     {
@@ -58,7 +71,7 @@ namespace Connection_Form
                         {
                             remoteAddress = ipv4Addresses[0].ToString();
                             textBox_Address.Text = "";
-                            MessageBox.Show("Сервер найден!");
+                            MessageBox.Show("Данный хост существует!\nИдет проверка на наличие сервера на нем...");
                             this.Hide();
                         }
                         else
@@ -66,9 +79,9 @@ namespace Connection_Form
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                MessageBox.Show($"{data} - этот хост неизвестен!\r\nПричиной проблемы может быть следующее:\r\n  1) Неверное имя хоста или IP-адрес\r\n  2) Отсутствие подключения к Интернету. \r\nОшибка: {ex}");
+                MessageBox.Show($"{data} - этот хост неизвестен!\r\nПричиной проблемы может быть следующее:\r\n  1) Неверное имя хоста или IP-адрес\r\n  2) Отсутствие подключения к Интернету.");
                 textBox_Address.Text = "Добавить сервер не удалось..";
             }
         }

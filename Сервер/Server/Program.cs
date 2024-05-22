@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -8,7 +9,9 @@ using System.Text;
 public class FileTransferServer
 {
     private const int ListenPort = 12345; // Порт, на котором сервер прослушивает подключения
-    private static readonly string StoragePath = Path.Combine(Directory.GetCurrentDirectory(), "Файлы");  // на моем домащней компьютере @"H:\Учеба Илья\Черновики"
+    private static readonly string StoragePath = Path.Combine(Directory.GetCurrentDirectory(), "Файлы");
+    private const int Size = 1024;
+    private const int length = 10;
 
     public static void Main()
     {
@@ -26,7 +29,7 @@ public class FileTransferServer
                 // Привязка сокета к локальной конечной точке и начало прослушивания подключений
                 IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Any, ListenPort);
                 listener.Bind(localEndPoint);
-                listener.Listen(10);
+                listener.Listen(length);
 
                 Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
@@ -35,10 +38,13 @@ public class FileTransferServer
                     // Принятие подключения
                     using (Socket handler = listener.Accept())
                     {
+
+                        IPEndPoint clientEndPoint = (IPEndPoint)handler.RemoteEndPoint;
+                        string clientIPAddress = clientEndPoint.Address.ToString();
                         Console.WriteLine("Подключение установлено.");
 
                         // Получение данных от клиента
-                        byte[] data = new byte[1024];
+                        byte[] data = new byte[Size];
                         int bytesRead = handler.Receive(data);
                         string request = Encoding.UTF8.GetString(data, 0, bytesRead);
 
@@ -52,19 +58,23 @@ public class FileTransferServer
                         if (action == "DELETE")
                         {
                             response = DeleteFile(fileName);
+                            Console.WriteLine($"Клиент {clientIPAddress} удалили файл {fileName}.\n");
                         }
                         else if (action == "RENAME" && requestParts.Length > 2)
                         {
                             string newFileName = requestParts[2];
                             response = RenameFile(fileName, newFileName);
+                            Console.WriteLine($"Клиент {clientIPAddress} переименовал файл {fileName} в {newFileName}.\n");
                         }
                         else if (action == "DOWNLOAD")
                         {
                             response = SendFile(handler, fileName);
+                            Console.WriteLine($"Клиент {clientIPAddress} скачал файл {fileName}\n.");
                         }
                         else if (action == "UPLOAD")
                         {
                             response = ReceiveFile(handler, fileName);
+                            Console.WriteLine($"Клиент {clientIPAddress} отправил файл {fileName}.\n");
                         }
                         else if (action == "LIST")
                         {

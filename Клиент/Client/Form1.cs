@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Connection_Form;
+using Client;
 
 namespace Client
 {
@@ -22,10 +23,14 @@ namespace Client
     {
         private int remotePort = 12345; // Порт удаленного узла
         private string newAddress;
+        private About_Authorcs aboutAuthor;
+        private About_Program aboutProgram;
 
         public Form1()
         {
             InitializeComponent();
+            listViewFiles.Columns[0].Width = 327;
+            listViewFiles.Columns[1].Width = 257;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -37,8 +42,6 @@ namespace Client
             newAddress = connection_Form.RemoteAddress;
             label3.Text = "\r\nХост: " + newAddress + "\r\nПорт:" + remotePort;
             RefreshFileList();
-            listViewFiles.Columns[0].Width = 327;
-            listViewFiles.Columns[1].Width = 257;
         }
 
         
@@ -315,6 +318,18 @@ namespace Client
         private void выйтиToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Application.Exit();
+        }
+
+        private void оПрограммеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            aboutProgram = new About_Program();
+            aboutProgram.Show();
+        }
+
+        private void обАвтореToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            aboutAuthor = new About_Authorcs();
+            aboutAuthor.Show();
         }
     }
 }

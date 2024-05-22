@@ -28,9 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
             System.Windows.Forms.ColumnHeader columnHeader4;
             System.Windows.Forms.ColumnHeader columnHeader5;
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.серверToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,12 +48,25 @@
             this.label3 = new System.Windows.Forms.Label();
             this.listViewFiles = new System.Windows.Forms.ListView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.оПрограммеToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.обАвтореToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // columnHeader4
+            // 
+            columnHeader4.Text = "Название файла ";
+            columnHeader4.Width = 527;
+            // 
+            // columnHeader5
+            // 
+            columnHeader5.Text = "Тип файла";
+            columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            columnHeader5.Width = 255;
             // 
             // menuStrip1
             // 
@@ -91,6 +105,9 @@
             // 
             // справкиToolStripMenuItem
             // 
+            this.справкиToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.оПрограммеToolStripMenuItem,
+            this.обАвтореToolStripMenuItem});
             this.справкиToolStripMenuItem.Name = "справкиToolStripMenuItem";
             this.справкиToolStripMenuItem.Size = new System.Drawing.Size(82, 24);
             this.справкиToolStripMenuItem.Text = "Справки";
@@ -164,7 +181,7 @@
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.button4.Location = new System.Drawing.Point(801, 302);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(209, 47);
+            this.button4.Size = new System.Drawing.Size(209, 60);
             this.button4.TabIndex = 5;
             this.button4.Text = "Обновить список";
             this.button4.UseVisualStyleBackColor = true;
@@ -175,7 +192,7 @@
             this.button5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.button5.Location = new System.Drawing.Point(1029, 302);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(193, 47);
+            this.button5.Size = new System.Drawing.Size(193, 60);
             this.button5.TabIndex = 6;
             this.button5.Text = "Удалить файл";
             this.button5.UseVisualStyleBackColor = true;
@@ -207,17 +224,6 @@
             this.listViewFiles.UseCompatibleStateImageBehavior = false;
             this.listViewFiles.View = System.Windows.Forms.View.Details;
             // 
-            // columnHeader4
-            // 
-            columnHeader4.Text = "Название файла ";
-            columnHeader4.Width = 527;
-            // 
-            // columnHeader5
-            // 
-            columnHeader5.Text = "Тип файла";
-            columnHeader5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            columnHeader5.Width = 255;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.label3);
@@ -228,6 +234,20 @@
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Информация о сервере";
+            // 
+            // оПрограммеToolStripMenuItem
+            // 
+            this.оПрограммеToolStripMenuItem.Name = "оПрограммеToolStripMenuItem";
+            this.оПрограммеToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.оПрограммеToolStripMenuItem.Text = "О программе";
+            this.оПрограммеToolStripMenuItem.Click += new System.EventHandler(this.оПрограммеToolStripMenuItem_Click);
+            // 
+            // обАвтореToolStripMenuItem
+            // 
+            this.обАвтореToolStripMenuItem.Name = "обАвтореToolStripMenuItem";
+            this.обАвтореToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.обАвтореToolStripMenuItem.Text = "Об авторе";
+            this.обАвтореToolStripMenuItem.Click += new System.EventHandler(this.обАвтореToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -242,9 +262,10 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Network Explorer";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -275,5 +296,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ListView listViewFiles;
         private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.ToolStripMenuItem оПрограммеToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem обАвтореToolStripMenuItem;
     }
 }
