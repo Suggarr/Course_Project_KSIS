@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Client
 {
-    public partial class About_Authorcs : Form
+    public partial class About_Author : Form
     {
-        public About_Authorcs()
+        public About_Author()
         {
             InitializeComponent();
         }

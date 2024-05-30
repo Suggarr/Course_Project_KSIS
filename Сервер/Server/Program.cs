@@ -58,23 +58,23 @@ public class FileTransferServer
                         if (action == "DELETE")
                         {
                             response = DeleteFile(fileName);
-                            Console.WriteLine($"Клиент {clientIPAddress} удалили файл {fileName}.\n");
+                            Console.WriteLine($"Клиент {clientIPAddress} удалил файл {fileName}\n");
                         }
                         else if (action == "RENAME" && requestParts.Length > 2)
                         {
                             string newFileName = requestParts[2];
                             response = RenameFile(fileName, newFileName);
-                            Console.WriteLine($"Клиент {clientIPAddress} переименовал файл {fileName} в {newFileName}.\n");
+                            Console.WriteLine($"Клиент {clientIPAddress} переименовал файл {fileName} в {newFileName}\n");
                         }
                         else if (action == "DOWNLOAD")
                         {
                             response = SendFile(handler, fileName);
-                            Console.WriteLine($"Клиент {clientIPAddress} скачал файл {fileName}\n.");
+                            Console.WriteLine($"Клиент {clientIPAddress} скачал файл {fileName}\n");
                         }
                         else if (action == "UPLOAD")
                         {
                             response = ReceiveFile(handler, fileName);
-                            Console.WriteLine($"Клиент {clientIPAddress} отправил файл {fileName}.\n");
+                            Console.WriteLine($"Клиент {clientIPAddress} отправил файл {fileName}\n");
                         }
                         else if (action == "LIST")
                         {
@@ -163,7 +163,7 @@ public class FileTransferServer
                 {
                     using (BinaryReader reader = new BinaryReader(fileStream))
                     {
-                        byte[] buffer = new byte[1024];
+                        byte[] buffer = new byte[Size];
                         int bytesRead = 0;
 
                         while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
@@ -204,7 +204,7 @@ public class FileTransferServer
             // Получение файла по частям
             using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[Size];
                 long bytesReceived = 0;
                 int bytesToRead;
 
@@ -230,15 +230,15 @@ public class FileTransferServer
         try
         {
             StringBuilder fileList = new StringBuilder();
-            DirectoryInfo directoryInfo = new DirectoryInfo(StoragePath);
-            FileInfo[] files = directoryInfo.GetFiles();
+            DirectoryInfo directoryInfo = new DirectoryInfo(StoragePath);//объект DirectoryInfo, который представляет директорию, в которой находятся файлы
+            FileInfo[] files = directoryInfo.GetFiles();//массив объектов FileInfo, каждый из которых представляет один файл в указанной директории
 
             foreach (FileInfo file in files)
             {
                 fileList.AppendLine(file.Name);
             }
 
-            byte[] encodedBytes = Encoding.UTF8.GetBytes(fileList.ToString());
+            byte[] encodedBytes = Encoding.UTF8.GetBytes(fileList.ToString());//преобразовываем потому что у нас строка с файлами формата UTF-16
             string encodedFileListString = Encoding.UTF8.GetString(encodedBytes);
 
             return encodedFileListString;

@@ -15,18 +15,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using Connection_Form;
-using Client;
 
 namespace Client
 {
-    public partial class Form1 : Form
+    public partial class ClientForm : Form
     {
         private int remotePort = 12345; // Порт удаленного узла
         private string newAddress;
-        private About_Authorcs aboutAuthor;
+        private About_Author aboutAuthor;
         private About_Program aboutProgram;
 
-        public Form1()
+        public ClientForm()
         {
             InitializeComponent();
             listViewFiles.Columns[0].Width = 327;
@@ -182,6 +181,7 @@ namespace Client
                     byte[] commandBytes = System.Text.Encoding.UTF8.GetBytes(renameCommand);
                     socket.Send(commandBytes);
 
+                    // Ожидание подтверждения от удаленного узла
                     byte[] confirmationBuffer = new byte[2];
                     socket.Receive(confirmationBuffer);
                     string confirmation = System.Text.Encoding.UTF8.GetString(confirmationBuffer);
@@ -233,7 +233,7 @@ namespace Client
                                 long bytesRemaining = fileSize;
 
                                 while (bytesRemaining > 0 && (bytesRead = socket.Receive(buffer)) > 0)
-                                {
+                                {//Этот блок кода читает данные файла из сокета небольшими порциями и записывает их в FileStream с помощью BinaryWriter. Цикл продолжается, пока не будут получены и записаны все данные файла.
                                     int bytesToWrite = (int)Math.Min(bytesRemaining, bytesRead);
                                     writer.Write(buffer, 0, bytesToWrite);
                                     bytesRemaining -= bytesToWrite;
@@ -328,7 +328,7 @@ namespace Client
 
         private void обАвтореToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            aboutAuthor = new About_Authorcs();
+            aboutAuthor = new About_Author();
             aboutAuthor.Show();
         }
     }

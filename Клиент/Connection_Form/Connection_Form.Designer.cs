@@ -41,7 +41,7 @@
             this.button_Connection.Name = "button_Connection";
             this.button_Connection.Size = new System.Drawing.Size(256, 58);
             this.button_Connection.TabIndex = 5;
-            this.button_Connection.Text = "Войти на сервер";
+            this.button_Connection.Text = "Подключиться";
             this.button_Connection.UseVisualStyleBackColor = true;
             this.button_Connection.Click += new System.EventHandler(this.button_Connection_Click);
             // 
